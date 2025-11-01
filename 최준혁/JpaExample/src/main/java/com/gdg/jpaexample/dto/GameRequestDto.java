@@ -1,5 +1,6 @@
 package com.gdg.jpaexample.dto;
 
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 
 @Getter

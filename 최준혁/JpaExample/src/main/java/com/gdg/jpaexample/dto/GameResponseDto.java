@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -26,8 +27,8 @@ public class GameResponseDto {
                 .bettingChips(game.getBettingChips())
                 .chips(game.getChips())
                 .result(game.getResult())
-                .playerCard(game.getPlayerCard())
-                .opponentCard(game.getOpponentCard())
+                .playerCard(new ArrayList<>(game.getPlayerCard()))
+                .opponentCard(new ArrayList<>(game.getOpponentCard()))
                 .date(game.getDate())
                 .playerId(game.getPlayer().getId())
                 .playerName(game.getPlayer().getName())

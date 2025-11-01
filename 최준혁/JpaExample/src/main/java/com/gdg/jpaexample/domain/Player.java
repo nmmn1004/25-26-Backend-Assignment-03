@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,7 +35,7 @@ public class Player {
     private Long record;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
-    private ArrayList<Game> games = new ArrayList<>();
+    private List<Game> games = new ArrayList<>();
 
     @Builder
     public Player(String name) {

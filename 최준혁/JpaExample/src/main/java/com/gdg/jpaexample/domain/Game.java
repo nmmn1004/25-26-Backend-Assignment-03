@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,11 +28,11 @@ public class Game {
 
     @ElementCollection
     @Column(name = "player_card")
-    private ArrayList<Integer> playerCard;
+    private List<Integer> playerCard;
 
     @ElementCollection
     @Column(name = "opponent_card")
-    private ArrayList<Integer> opponentCard;
+    private List<Integer> opponentCard;
 
     private LocalDate date;
 

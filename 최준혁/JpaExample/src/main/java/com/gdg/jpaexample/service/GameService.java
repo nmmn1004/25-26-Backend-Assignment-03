@@ -22,8 +22,13 @@ public class GameService {
 
     @Transactional
     public GameResponseDto saveGame(GameRequestDto gameRequestDto) {
+        if (gameRequestDto.getBettingChips() == null || gameRequestDto.getBettingChips() > 10000) {
+            throw new IllegalArgumentException("베팅 칩은 10000을 넘을 수 없습니다.");
+        }
+
         Player player = playerRepository.findById(gameRequestDto.getPlayerId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 플레이어입니다."));
+
 
         Game game = Game.builder()
                 .player(player)
@@ -51,6 +56,17 @@ public class GameService {
         Player player = playerRepository.findById(gameRequestDto.getPlayerId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 플레이어입니다."));
 
+        if (game.getResult() != null)
+            throw new IllegalArgumentException("이미 종료된 게임입니다.");
+
+        if (gameRequestDto.getBettingChips() > game.getChips()) {
+            throw new IllegalArgumentException("베팅 칩은 보유 칩을 넘을 수 없습니다.");
+        }
+
+        if (gameRequestDto.getBettingChips() < game.getBettingChips()) {
+            throw new IllegalArgumentException("이전보다 더 높게 걸어야 합니다.");
+        }
+
         game.update(gameRequestDto.getBettingChips(), game.getChips(), player);
 
         return GameResponseDto.from(game);
@@ -76,6 +92,9 @@ public class GameService {
 
         Player player = playerRepository.findById(game.getPlayer().getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 플레이어입니다."));
+
+        if (game.getResult() != null)
+            throw new IllegalArgumentException("이미 종료된 게임입니다.");
 
         CardUtil util = new CardUtil();
 
