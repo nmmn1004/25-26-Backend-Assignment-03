@@ -1,9 +1,8 @@
 package com.gdg.jpaexample.controller;
 
-import com.gdg.jpaexample.dto.GameRequestDto;
-import com.gdg.jpaexample.dto.GameResponseDto;
+import com.gdg.jpaexample.dto.Game.GameSaveRequestDto;
+import com.gdg.jpaexample.dto.Game.GameInfoResponseDto;
 import com.gdg.jpaexample.service.GameService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,33 +24,28 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping
-    public ResponseEntity<GameResponseDto> saveGame(@RequestBody GameRequestDto gameRequestDto) {
+    public ResponseEntity<GameInfoResponseDto> saveGame(@RequestBody GameSaveRequestDto gameRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gameService.saveGame(gameRequestDto));
     }
 
     @GetMapping("/{gameId}")
-    public ResponseEntity<GameResponseDto> getGame(@PathVariable Long gameId) {
+    public ResponseEntity<GameInfoResponseDto> getGame(@PathVariable Long gameId) {
         return ResponseEntity.status(HttpStatus.OK).body(gameService.getGame(gameId));
     }
 
-    @PatchMapping("/{gameId}")
-    public ResponseEntity<GameResponseDto> updateGame(@PathVariable Long gameId, @RequestBody GameRequestDto gameRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(gameService.updateGame(gameId, gameRequestDto));
-    }
-
     @DeleteMapping("/{gameId}")
-    public ResponseEntity<GameResponseDto> deleteGame(@PathVariable Long gameId) {
+    public ResponseEntity<GameInfoResponseDto> deleteGame(@PathVariable Long gameId) {
         gameService.deleteGame(gameId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<GameResponseDto>> getAllGame() {
+    public ResponseEntity<List<GameInfoResponseDto>> getAllGame() {
         return ResponseEntity.status(HttpStatus.OK).body(gameService.getAllGame());
     }
 
     @GetMapping("/result/{gameId}")
-    public ResponseEntity<GameResponseDto> getResult(@PathVariable Long gameId) {
-        return ResponseEntity.status(HttpStatus.OK).body(gameService.getRoundResult(gameId));
+    public ResponseEntity<GameInfoResponseDto> getResult(@PathVariable Long gameId) {
+        return ResponseEntity.status(HttpStatus.OK).body(gameService.getGameResult(gameId));
     }
 }

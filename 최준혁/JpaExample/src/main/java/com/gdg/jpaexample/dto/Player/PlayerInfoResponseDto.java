@@ -1,25 +1,24 @@
-package com.gdg.jpaexample.dto;
+package com.gdg.jpaexample.dto.Player;
 
 import com.gdg.jpaexample.domain.Player;
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.LocalDate;
 
 @Builder
 @Getter
-public class PlayerResponseDto {
+public class PlayerInfoResponseDto {
     private Long id;
     private String name;
-    private LocalDate date;
     private Long record;
+    private LocalDate date;
 
-    public static PlayerResponseDto from(Player player) {
-        return PlayerResponseDto.builder()
+    public static PlayerInfoResponseDto from(Player player) {
+        return PlayerInfoResponseDto.builder()
                 .id(player.getId())
                 .name(player.getName())
-                .date(player.getDate())
                 .record(player.getRecord())
+                .date(player.getDate())
                 .build();
     }
 }

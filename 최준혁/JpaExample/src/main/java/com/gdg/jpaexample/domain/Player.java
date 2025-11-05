@@ -19,20 +19,25 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+/**
+* @param id - 플레이어의 id
+* @param name - 플레이어의 닉네임
+* @param record - 플레이어의 최고 기록
+* @param LocalDate - 플레이어 생성년월일
+* @param games - 플레이어가 플레이한 게임 1:N
+*/
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "oauth_id")
     private Long id;
 
-    @Column(name = "player_name")
+    @Column(name = "name", length = 20)
     private String name;
 
-    @Column(name = "player_date")
-    private LocalDate date;
-
-    @Column(name = "player_record")
     private Long record;
+
+    private LocalDate date;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
     private List<Game> games = new ArrayList<>();

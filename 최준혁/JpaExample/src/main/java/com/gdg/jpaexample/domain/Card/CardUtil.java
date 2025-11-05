@@ -1,20 +1,11 @@
-package com.gdg.jpaexample.domain;
+package com.gdg.jpaexample.domain.Card;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CardUtil {
 //  카드를 할당할 때 사용합니다.
-    public ArrayList<Integer> generateRandomCards() {
-        ArrayList<Integer> cardList = new ArrayList<>(2);
-
-        cardList.addAll(Arrays.asList(
-                (int)(Math.random() * 10) + 1,
-                (int)(Math.random() * 10) + 1
-        ));
-
-        return cardList;
+    public int generateRandomCards() {
+        return (int)(Math.random() * 10) + 1;
     }
 //  할당된 카드의 합을 계산할 때 에이스를 1 혹은 11으로 계산하기 위해 사용합니다.
     public int calculateHandCard(List<Integer> cards) {

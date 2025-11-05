@@ -1,7 +1,8 @@
 package com.gdg.jpaexample.domain;
 
+import com.gdg.jpaexample.domain.Round.Round;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,11 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,50 +28,27 @@ public class Game {
     @Column(name = "game_id")
     private Long id;
 
-    @ElementCollection
-    @Column(name = "player_card")
-    private List<Integer> playerCard;
-
-    @ElementCollection
-    @Column(name = "opponent_card")
-    private List<Integer> opponentCard;
-
-    private LocalDate date;
-
-    @Column(name = "chips")
     private Long chips;
 
-    @Column(name = "betting_chips")
-    private Long bettingChips;
-
-    @Column(name = "game_result")
-    private Integer result;
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")
     private Player player;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
+    private List<Round> rounds = new ArrayList<>();
+
     @Builder
-    public Game(long bettingChips, Player player) {
+    public Game(Player player) {
         this.chips = 10000L;
-        this.bettingChips = bettingChips;
-        this.player = player;
-        this.result = null;
-
-        CardUtil util = new CardUtil();
-        this.playerCard = util.generateRandomCards();
-        this.opponentCard = util.generateRandomCards();
-
         this.date = LocalDate.now();
+
+        this.player = player;
     }
 
-    public void update(long bettingChips, long chips, Player player) {
-        this.bettingChips = bettingChips;
+    public void update(long chips, Player player) {
         this.chips = chips;
         this.player = player;
-    }
-
-    public void update(int result) {
-        this.result = result;
     }
 }
