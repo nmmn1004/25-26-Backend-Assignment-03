@@ -5,28 +5,22 @@ import com.gdg.jpaexample.dto.Card.CardInfoResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 @Builder
 public class RoundInfoResponseDto {
     private Long id;
     private Long bettingChips;
     private String result;
-    private List<CardInfoResponseDto> playerCards;
-    private List<CardInfoResponseDto> opponentCards;
+    private CardInfoResponseDto playerCard;
+    private CardInfoResponseDto opponentCard;
 
     public static RoundInfoResponseDto from(Round round) {
         return RoundInfoResponseDto.builder()
                 .id(round.getId())
                 .bettingChips(round.getBettingChips())
                 .result(round.getResult().name())
-                .playerCards(round.getPlayerCards().stream()
-                        .map(CardInfoResponseDto::from)
-                        .toList())
-                .opponentCards(round.getOpponentCards().stream()
-                        .map(CardInfoResponseDto::from)
-                        .toList())
+                .playerCard(CardInfoResponseDto.from(round.getPlayerCard()))
+                .opponentCard(CardInfoResponseDto.from(round.getOpponentCard()))
                 .build();
     }
 }

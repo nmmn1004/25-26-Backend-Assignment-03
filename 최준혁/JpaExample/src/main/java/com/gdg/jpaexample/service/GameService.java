@@ -42,7 +42,7 @@ public class GameService {
         return GameInfoResponseDto.from(game);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<GameInfoResponseDto> getAllGame() {
         return gameRepository.findAll()
                 .stream()

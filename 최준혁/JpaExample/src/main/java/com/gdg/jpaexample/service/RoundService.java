@@ -1,5 +1,7 @@
 package com.gdg.jpaexample.service;
 
+import com.gdg.jpaexample.domain.Card.Card;
+import com.gdg.jpaexample.domain.Card.CardOwner;
 import com.gdg.jpaexample.domain.Card.CardUtil;
 import com.gdg.jpaexample.domain.Game;
 import com.gdg.jpaexample.domain.Round.Round;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,13 @@ public class RoundService {
 
         Round round = new Round(roundSaveRequestDto.getBettingChips(), game);
 
+        Card playerCard = new Card(CardOwner.PLAYER, round);
+        Card opponentCard = new Card(CardOwner.OPPONENT, round);
+
+        round.getCards().add(playerCard);
+        round.getCards().add(opponentCard);
+
+        game.getRounds().add(round);
         game.update(game.getChips() - roundSaveRequestDto.getBettingChips(), game.getPlayer());
 
         roundRepository.save(round);
@@ -43,13 +53,10 @@ public class RoundService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게임입니다. (id=" + gameId + ")"));
 
-        List<Round> rounds = game.getRounds();
+        Round latest = game.getRounds().stream()
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException("아직 생성된 라운드가 없습니다. (gameId=" + gameId + ")"));
 
-        if (rounds.isEmpty()) {
-            throw new IllegalArgumentException("아직 생성된 라운드가 없습니다. (gameId=" + gameId + ")");
-        }
-
-        Round latest = rounds.get(rounds.size() - 1);
         return RoundInfoResponseDto.from(latest);
     }
 
@@ -68,12 +75,9 @@ public class RoundService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게임입니다. (id=" + gameId + ")"));
 
-        List<Round> rounds = game.getRounds();
-        if (rounds.isEmpty()) {
-            throw new IllegalArgumentException("수정할 라운드가 존재하지 않습니다. (gameId=" + gameId + ")");
-        }
-
-        Round latest = rounds.get(rounds.size() - 1);
+        Round latest = game.getRounds().stream()
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException("수정할 라운드가 존재하지 않습니다. (gameId=" + gameId + ")"));
 
         if (roundSaveRequestDto.getBettingChips() != null) {
             latest.updateBettingChips(roundSaveRequestDto.getBettingChips());
@@ -91,20 +95,21 @@ public class RoundService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게임입니다. (id=" + gameId + ")"));
 
-        List<Round> rounds = game.getRounds();
-        if (rounds.isEmpty()) {
-            throw new IllegalArgumentException("수정할 라운드가 존재하지 않습니다. (gameId=" + gameId + ")");
-        }
+        Round latest = game.getRounds().stream()
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException("수정할 라운드가 존재하지 않습니다. (gameId=" + gameId + ")"));
 
-        Round latest = rounds.get(rounds.size() - 1);
+        List<Card> cards = latest.getCards();
 
-        List<Integer> playerCards = latest.getPlayerCards().stream()
-                .flatMap(card -> List.of(card.getCard1(), card.getCard2()).stream())
-                .toList();
+        List<Integer> playerCards = cards.stream()
+                .filter(c -> c.getOwner() == CardOwner.PLAYER)
+                .flatMap(c -> List.of(c.getCard1(), c.getCard2()).stream())
+                .collect(Collectors.toList());
 
-        List<Integer> opponentCards = latest.getOpponentCards().stream()
-                .flatMap(card -> List.of(card.getCard1(), card.getCard2()).stream())
-                .toList();
+        List<Integer> opponentCards = cards.stream()
+                .filter(c -> c.getOwner() == CardOwner.OPPONENT)
+                .flatMap(c -> List.of(c.getCard1(), c.getCard2()).stream())
+                .collect(Collectors.toList());
 
         int playerScore = cardUtil.calculateHandCard(playerCards);
         int opponentScore = cardUtil.calculateHandCard(opponentCards);

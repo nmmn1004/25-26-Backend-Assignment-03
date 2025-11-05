@@ -36,19 +36,26 @@ public class Game {
     @JoinColumn(name = "player_id")
     private Player player;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
     private List<Round> rounds = new ArrayList<>();
 
     @Builder
     public Game(Player player) {
         this.chips = 10000L;
         this.date = LocalDate.now();
-
         this.player = player;
+
+        Round round = new Round(0L, this);
+        this.rounds.add(round);
     }
 
     public void update(long chips, Player player) {
         this.chips = chips;
         this.player = player;
+    }
+
+    public Round getLatestRound() {
+        if (rounds.isEmpty()) return null;
+        return rounds.get(rounds.size() - 1);
     }
 }

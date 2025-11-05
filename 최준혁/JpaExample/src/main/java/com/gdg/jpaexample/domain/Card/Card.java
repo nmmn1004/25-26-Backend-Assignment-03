@@ -1,15 +1,7 @@
 package com.gdg.jpaexample.domain.Card;
 
 import com.gdg.jpaexample.domain.Round.Round;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,8 +24,9 @@ public class Card {
     private Round round;
 
     public Card(CardOwner owner, Round round) {
-        this.round = round;
         this.owner = owner;
+        this.round = round;
+
         CardUtil cardUtil = new CardUtil();
         this.card1 = cardUtil.generateRandomCards();
         this.card2 = cardUtil.generateRandomCards();

@@ -2,17 +2,8 @@ package com.gdg.jpaexample.domain.Round;
 
 import com.gdg.jpaexample.domain.Card.Card;
 import com.gdg.jpaexample.domain.Card.CardOwner;
-import com.gdg.jpaexample.domain.Card.CardUtil;
 import com.gdg.jpaexample.domain.Game;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,11 +23,8 @@ public class Round {
 
     private RoundResult result;
 
-    @OneToMany(mappedBy = "round", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Card> playerCards = new ArrayList<>();
-
-    @OneToMany(mappedBy = "round", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Card> opponentCards = new ArrayList<>();
+    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Card> cards = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -48,18 +36,12 @@ public class Round {
         this.result = RoundResult.PENDING;
         this.game = game;
 
-        CardUtil cardUtil = new CardUtil();
+//        game.getRounds().add(this);
 
         Card playerCard = new Card(CardOwner.PLAYER, this);
-        this.playerCards.add(playerCard);
-
         Card opponentCard = new Card(CardOwner.OPPONENT, this);
-        this.opponentCards.add(opponentCard);
-
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
+        this.cards.add(playerCard);
+        this.cards.add(opponentCard);
     }
 
     public void updateBettingChips(long bettingChips) {
@@ -68,5 +50,19 @@ public class Round {
 
     public void updateResult(RoundResult result) {
         this.result = result;
+    }
+
+    public Card getPlayerCard() {
+        return cards.stream()
+                .filter(c -> c.getOwner() == CardOwner.PLAYER)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Card getOpponentCard() {
+        return cards.stream()
+                .filter(c -> c.getOwner() == CardOwner.OPPONENT)
+                .findFirst()
+                .orElse(null);
     }
 }
