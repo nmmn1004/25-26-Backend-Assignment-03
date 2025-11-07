@@ -14,13 +14,13 @@ import java.util.List;
 public class PlayerFinder {
     private final PlayerRepository playerRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Player findByIdOrThrow(Long playerId) {
         return playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(playerId));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Player> findAll() {
         return playerRepository.findAll();
     }

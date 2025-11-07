@@ -1,6 +1,5 @@
 package com.gdg.jpaexample.controller;
 
-import com.gdg.jpaexample.dto.Game.GameInfoResponseDto;
 import com.gdg.jpaexample.dto.Round.RoundInfoResponseDto;
 import com.gdg.jpaexample.dto.Round.RoundSaveRequestDto;
 import com.gdg.jpaexample.service.RoundService;

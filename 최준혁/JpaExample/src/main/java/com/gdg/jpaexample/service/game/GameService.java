@@ -1,8 +1,7 @@
-package com.gdg.jpaexample.service;
+package com.gdg.jpaexample.service.game;
 
 import com.gdg.jpaexample.domain.Game;
 import com.gdg.jpaexample.domain.Player;
-import com.gdg.jpaexample.domain.Round.Round;
 import com.gdg.jpaexample.dto.Game.GameSaveRequestDto;
 import com.gdg.jpaexample.dto.Game.GameInfoResponseDto;
 import com.gdg.jpaexample.repository.GameRepository;
@@ -18,33 +17,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameService {
     private final GameRepository gameRepository;
+    private final GameCreator gameCreator;
+    private final GameFinder gameFinder;
     private final PlayerFinder playerFinder;
     private final PlayerService playerService;
 
     @Transactional
-    public GameInfoResponseDto saveGame(GameSaveRequestDto gameRequestDto) {
-        Player player = playerFinder.findByIdOrThrow(gameRequestDto.getPlayerId());
+    public GameInfoResponseDto saveGame(GameSaveRequestDto gameSaveRequestDto) {
+        Player player = playerFinder.findByIdOrThrow(gameSaveRequestDto.getPlayerId());
 
-        Game game = Game.builder()
-                .player(player)
-                .build();
-
-        gameRepository.save(game);
-
-        return GameInfoResponseDto.from(game);
+        return GameInfoResponseDto.from(gameCreator.create(player, gameSaveRequestDto));
     }
 
     @Transactional(readOnly = true)
     public GameInfoResponseDto getGame(Long gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게임입니다."));
+        Game game = gameFinder.findByIdOrThrow(gameId);
 
         return GameInfoResponseDto.from(game);
     }
 
     @Transactional(readOnly = true)
     public List<GameInfoResponseDto> getAllGame() {
-        return gameRepository.findAll()
+        return gameFinder.findAll()
                 .stream()
                 .map(GameInfoResponseDto::from)
                 .toList();
@@ -52,8 +46,7 @@ public class GameService {
 
     @Transactional
     public GameInfoResponseDto getGameResult(Long gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게임입니다."));
+        Game game = gameFinder.findByIdOrThrow(gameId);
 
         playerService.updatePlayer(game.getPlayer().getId(), game.getChips());
 

@@ -38,19 +38,21 @@ public class PlayerService {
                 .toList();
     }
 
-    // 이름만 수정하는 경우
+    /**
+     * @param playerId
+     * @param playerSaveRequestDto
+     * @return
+     * */
     @Transactional
-    public PlayerInfoResponseDto updatePlayer(Long playerId, PlayerSaveRequestDto playerRequestDto) {
+    public PlayerInfoResponseDto updatePlayer(Long playerId, PlayerSaveRequestDto playerSaveRequestDto) {
         Player player = playerFinder.findByIdOrThrow(playerId);
 
-        if (playerRequestDto.getName() != null) {
-            player.update(playerRequestDto.getName(), player.getRecord());
-        }
-        // record 수정 없음
+        player.update(playerSaveRequestDto.getName(), player.getRecord());
+
         return PlayerInfoResponseDto.from(player);
     }
 
-    // 기록만 수정하는 경우
+//  헬퍼 클래스로 옮길 지 고민
     @Transactional
     public PlayerInfoResponseDto updatePlayer(Long playerId, Long record) {
         Player player = playerFinder.findByIdOrThrow(playerId);
@@ -60,7 +62,7 @@ public class PlayerService {
         }
         return PlayerInfoResponseDto.from(player);
     }
-
+w
     @Transactional
     public void deletePlayer(Long playerId) {
         playerRepository.delete(playerFinder.findByIdOrThrow(playerId));

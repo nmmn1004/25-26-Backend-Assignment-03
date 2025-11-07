@@ -10,6 +10,7 @@ import com.gdg.jpaexample.dto.Round.RoundInfoResponseDto;
 import com.gdg.jpaexample.dto.Round.RoundSaveRequestDto;
 import com.gdg.jpaexample.repository.GameRepository;
 import com.gdg.jpaexample.repository.RoundRepository;
+import com.gdg.jpaexample.service.game.GameFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoundService {
     private final RoundRepository roundRepository;
-    private final GameRepository gameRepository;
+    private final GameFinder gameFinder;
 
     @Transactional
     public RoundInfoResponseDto saveRound(RoundSaveRequestDto roundSaveRequestDto) {
-        Game game = gameRepository.findById(roundSaveRequestDto.getGameId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게임입니다. (id=" + roundSaveRequestDto.getGameId() + ")"));
+        Game game = gameFinder.findByIdOrThrow(roundSaveRequestDto.getGameId());
 
         if (roundSaveRequestDto.getBettingChips() > game.getChips()) {
             throw new IllegalArgumentException("베팅 칩이 보유 칩보다 많습니다.");
